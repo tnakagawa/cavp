@@ -210,4 +210,4 @@ function SHA3_512(Mbytes) {
     return Keccak(576, 512, Mbytes, 0x06);
 }
 
-export { SHAKE128 };
+export { SHA3_224, SHA3_256, SHA3_384, SHA3_512, SHAKE128, SHAKE256 };
