@@ -1,4 +1,5 @@
 'use strict';
+// https://keccak.team/keccak_specs_summary.html
 
 // lane lengths
 const w = 64;

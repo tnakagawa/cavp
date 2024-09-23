@@ -1,6 +1,7 @@
 'use strict';
 
 import { SHA3_224, SHA3_256, SHA3_384, SHA3_512, SHAKE128, SHAKE256 } from './sha3.js';
+import { SHA1, SHA224, SHA256 } from './sha2.js';
 
 async function init() {
     console.log('>>>', 'init');
@@ -21,6 +22,7 @@ const MainApp = {
             url: '',
             SHAKE: null,
             SHA3: null,
+            SHA: null,
         };
     },
     mounted() {
@@ -53,6 +55,27 @@ const MainApp = {
                 'SHAKE256Monte',
                 'SHAKE256ShortMsg',
                 'SHAKE256VariableOut',
+                'SHA1LongMsg',
+                'SHA1Monte',
+                'SHA1ShortMsg',
+                'SHA224LongMsg',
+                'SHA224Monte',
+                'SHA224ShortMsg',
+                'SHA256LongMsg',
+                'SHA256Monte',
+                'SHA256ShortMsg',
+                // 'SHA384LongMsg',
+                // 'SHA384Monte',
+                // 'SHA384ShortMsg',
+                // 'SHA512LongMsg',
+                // 'SHA512Monte',
+                // 'SHA512ShortMsg',
+                // 'SHA512_224LongMsg',
+                // 'SHA512_224Monte',
+                // 'SHA512_224ShortMsg',
+                // 'SHA512_256LongMsg',
+                // 'SHA512_256Monte',
+                // 'SHA512_256ShortMsg',
             ]
             console.log('<<<', 'init');
         },
@@ -148,6 +171,42 @@ const MainApp = {
                     this.url = './shakebytetestvectors/' + this.testname + '.rsp';
                     this.SHAKE = SHAKE256;
                     await this.testSHAKEVariableOut();
+                } else if (this.testname == 'SHA1LongMsg') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA3 = SHA1;
+                    await this.testSHA3Msg();
+                } else if (this.testname == 'SHA1Monte') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA = SHA1;
+                    await this.testSHAMonte();
+                } else if (this.testname == 'SHA1ShortMsg') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA3 = SHA1;
+                    await this.testSHA3Msg();
+                } else if (this.testname == 'SHA224LongMsg') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA3 = SHA224;
+                    await this.testSHA3Msg();
+                } else if (this.testname == 'SHA224Monte') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA = SHA224;
+                    await this.testSHAMonte();
+                } else if (this.testname == 'SHA224ShortMsg') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA3 = SHA224;
+                    await this.testSHA3Msg();
+                } else if (this.testname == 'SHA256LongMsg') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA3 = SHA256;
+                    await this.testSHA3Msg();
+                } else if (this.testname == 'SHA256Monte') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA = SHA256;
+                    await this.testSHAMonte();
+                } else if (this.testname == 'SHA256ShortMsg') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA3 = SHA256;
+                    await this.testSHA3Msg();
                 }
                 const end = Date.now();
                 this.time = (end - start) + ' ms';
@@ -180,7 +239,52 @@ const MainApp = {
                 console.error(e);
             }
         },
+        async testSHAMonte() {
+            // https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Algorithm-Validation-Program/documents/shs/SHAVS.pdf
+            try {
+                const text = await getRes(this.url);
+                const data = parseSHA3Monte(text);
+                console.dir(data);
+                this.total = data.list.length;
+
+                // INPUT: Seed - A random seed n bits long
+                // {
+                let M = new Array(1003);
+                let MD = new Array(1003);
+                let Seed = hex2bs(data.Seed);
+                // for (j=0; j<100; j++) {
+                for (let j = 0; j < 100; j++) {
+                    // MD0 = MD1 = MD2 = Seed;
+                    MD[0] = Seed;
+                    MD[1] = MD[0];
+                    MD[2] = MD[1];
+                    // for (i=3; i<1003; i++) {
+                    for (let i = 3; i < 1003; i++) {
+                        // Mi = MDi-3 || MDi-2 || MDi-1;
+                        M[i] = MD[i - 3].concat(MD[i - 2]).concat(MD[i - 1]);
+                        // MDi = SHA(Mi);
+                        MD[i] = hex2bs(this.SHA(M[i]));
+                    }
+                    // }
+                    // MDj = Seed = MD1002;
+                    let MDj = MD[1002];
+                    Seed = MD[1002];
+                    // OUTPUT: MDj
+                    if (bs2hex(MDj) == data.list[j].MD) {
+                        this.ok++;
+                    } else {
+                        this.ng++;
+                    }
+                    await this.sleep(1);
+                }
+                // }
+                // }
+            } catch (e) {
+                console.error(e);
+            }
+        },
         async testSHA3Monte() {
+            // https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Algorithm-Validation-Program/documents/sha3/sha3vs.pdf
             try {
                 const text = await getRes(this.url);
                 const data = parseSHA3Monte(text);
@@ -336,7 +440,6 @@ const MainApp = {
 
 async function getRes(url) {
     const data = await fetch(url);
-    console.log(data);
     const text = await data.text();
     return text;
 }
