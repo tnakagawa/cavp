@@ -1,7 +1,7 @@
 'use strict';
 
 import { SHA3_224, SHA3_256, SHA3_384, SHA3_512, SHAKE128, SHAKE256 } from './sha3.js';
-import { SHA1, SHA224, SHA256 } from './sha2.js';
+import { SHA1, SHA224, SHA256, SHA512, SHA384, SHA512_224, SHA512_256 } from './sha2.js';
 
 async function init() {
     console.log('>>>', 'init');
@@ -64,18 +64,18 @@ const MainApp = {
                 'SHA256LongMsg',
                 'SHA256Monte',
                 'SHA256ShortMsg',
-                // 'SHA384LongMsg',
-                // 'SHA384Monte',
-                // 'SHA384ShortMsg',
-                // 'SHA512LongMsg',
-                // 'SHA512Monte',
-                // 'SHA512ShortMsg',
-                // 'SHA512_224LongMsg',
-                // 'SHA512_224Monte',
-                // 'SHA512_224ShortMsg',
-                // 'SHA512_256LongMsg',
-                // 'SHA512_256Monte',
-                // 'SHA512_256ShortMsg',
+                'SHA384LongMsg',
+                'SHA384Monte',
+                'SHA384ShortMsg',
+                'SHA512LongMsg',
+                'SHA512Monte',
+                'SHA512ShortMsg',
+                'SHA512_224LongMsg',
+                'SHA512_224Monte',
+                'SHA512_224ShortMsg',
+                'SHA512_256LongMsg',
+                'SHA512_256Monte',
+                'SHA512_256ShortMsg',
             ]
             console.log('<<<', 'init');
         },
@@ -207,6 +207,54 @@ const MainApp = {
                     this.url = './shabytetestvectors/' + this.testname + '.rsp';
                     this.SHA3 = SHA256;
                     await this.testSHA3Msg();
+                } else if (this.testname == 'SHA512LongMsg') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA3 = SHA512;
+                    await this.testSHA3Msg();
+                } else if (this.testname == 'SHA512Monte') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA = SHA512;
+                    await this.testSHAMonte();
+                } else if (this.testname == 'SHA512ShortMsg') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA3 = SHA512;
+                    await this.testSHA3Msg();
+                } else if (this.testname == 'SHA384LongMsg') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA3 = SHA384;
+                    await this.testSHA3Msg();
+                } else if (this.testname == 'SHA384Monte') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA = SHA384;
+                    await this.testSHAMonte();
+                } else if (this.testname == 'SHA384ShortMsg') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA3 = SHA384;
+                    await this.testSHA3Msg();
+                } else if (this.testname == 'SHA512_224LongMsg') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA3 = SHA512_224;
+                    await this.testSHA3Msg();
+                } else if (this.testname == 'SHA512_224Monte') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA = SHA512_224;
+                    await this.testSHAMonte();
+                } else if (this.testname == 'SHA512_224ShortMsg') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA3 = SHA512_224;
+                    await this.testSHA3Msg();
+                } else if (this.testname == 'SHA512_256LongMsg') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA3 = SHA512_256;
+                    await this.testSHA3Msg();
+                } else if (this.testname == 'SHA512_256Monte') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA = SHA512_256;
+                    await this.testSHAMonte();
+                } else if (this.testname == 'SHA512_256ShortMsg') {
+                    this.url = './shabytetestvectors/' + this.testname + '.rsp';
+                    this.SHA3 = SHA512_256;
+                    await this.testSHA3Msg();
                 }
                 const end = Date.now();
                 this.time = (end - start) + ' ms';
@@ -270,6 +318,7 @@ const MainApp = {
                     let MDj = MD[1002];
                     Seed = MD[1002];
                     // OUTPUT: MDj
+                    console.log(j, bs2hex(MDj), bs2hex(MDj) == data.list[j].MD);
                     if (bs2hex(MDj) == data.list[j].MD) {
                         this.ok++;
                     } else {
